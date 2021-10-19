@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.6.0/css/ol.css" type="text/css">
+    <style>
+      .map {
+        height: 500px;
+        width: 100%;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.6.0/build/ol.js"></script>
+    <title>Districts of Nepal</title>
+
+  </head>
+  <body>
+    <h2><a href="#" class="tran3s" style="color:magenta;">Districts of Nepal</h2>
+       
+
+    <div id="map" class="map"></div>
+     Legend:
+    <div><img id="legend"/></div>
+    <script type="text/javascript">
+      var osm = new ol.layer.Tile({source: new ol.source.OSM()});
+
+
+       var wmsCountry = new ol.layer.Image ({
+        source: new ol.source.ImageWMS({
+            url: 'http://localhost:8080/geoserver/Webgis1/wms',
+            params: {'LAYERS': 'Webgis1:district'},
+            serverType: 'geoserver'
+          })
+        });
+      var map = new ol.Map({
+        target: 'map',
+        layers: [osm, wmsCountry],        
+        view: new ol.View({
+          center: ol.proj.fromLonLat([84.7, 28.3]),
+          zoom: 7
+        })
+      });
+var wmsSource = new ol.source.ImageWMS({
+  url: 'http://localhost:8080/geoserver/Webgis1/wms',
+  params: {'LAYERS': 'Webgis:district1'},
+  ratio: 1,
+  serverType: 'geoserver',
+});
+
+//for legend
+      var updateLegend = function (resolution) {
+  var graphicUrl = wmsSource.getLegendUrl(resolution);
+  var img = document.getElementById('legend');
+  img.src = graphicUrl;
+};
+
+
+// Initial legend
+var resolution = map.getView().getResolution();
+updateLegend(resolution);
+
+// Update the legend when the resolution changes
+map.getView().on('change:resolution', function (event) {
+  var resolution = event.target.getResolution();
+  updateLegend(resolution);
+});
+
+    </script>
+  </body>
+</html>
